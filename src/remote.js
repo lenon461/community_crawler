@@ -32,7 +32,7 @@ function scrapyPosts(pageNumberOffset, pageNumberLimit, site) {
         const posts = [];
         for (let i = pageNumberOffset; i <= pageNumberLimit; i++) {
             const endpoint = `${url}${i}`;
-            const response = yield page.goto(url, pageOption);
+            const response = yield page.goto(endpoint, pageOption);
             if (response !== null) {
                 const html = yield response.text();
                 const $ = cheerio_1.default.load(html);
