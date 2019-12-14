@@ -43,5 +43,7 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
             }
         }
     }
+    await page.close(); 
+    await browser.close();
     return posts.map(payload => new Post(payload))
 }

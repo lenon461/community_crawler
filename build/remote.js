@@ -49,6 +49,8 @@ function scrapyPosts(pageNumberOffset, pageNumberLimit, site) {
                 }
             }
         }
+        yield page.close();
+        yield browser.close();
         return posts.map(payload => new Post_1.Post(payload));
     });
 }

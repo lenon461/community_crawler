@@ -16,30 +16,31 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const remote_1 = require("./remote");
 const fs = __importStar(require("fs"));
-function writeFile(pageNumberOffset, pageNumberLimit, site) {
+const path = __importStar(require("path"));
+function writeFile(posts, site) {
     return __awaiter(this, void 0, void 0, function* () {
-        let curStartPageNumber = pageNumberOffset;
-        let curEndPageNumber = 10;
-        while (pageNumberLimit >= curEndPageNumber) {
-            const posts = yield remote_1.scrapyPosts(curStartPageNumber, curEndPageNumber, site);
-            const obj = posts.map(post => {
-                return { 'payload': post };
-            });
-            const file = `../data/${site.sitename}.json`;
-            fs.appendFileSync(file, JSON.stringify(obj) + '\n');
-            console.log(curStartPageNumber + ' page ~ ' + curEndPageNumber + ' page write End');
-            curStartPageNumber += 10;
-            curEndPageNumber += 10;
+        const dataPath = path.join(__dirname, '../data');
+        if (!fs.existsSync(dataPath)) {
+            fs.mkdirSync(dataPath);
+            console.log('data dir is not exist.');
         }
+        console.log("data dir is created");
+        const filePath = path.join(__dirname, '../data', `${site.sitename}.json`);
+        const fd = fs.openSync(filePath, 'w');
+        // const obj = posts.map(post => {
+        //     return {'payload': post}
+        // })
+        fs.appendFileSync(filePath, JSON.stringify(posts) + '\n');
+        console.log("file is writed");
+        return;
     });
 }
 exports.writeFile = writeFile;
 function readFile(site) {
     return __awaiter(this, void 0, void 0, function* () {
-        const file = `../data/${site.sitename}.json`;
-        return fs.readFileSync(file, 'utf8');
+        const filePath = path.join(__dirname, '../data', `${site.sitename}.json`);
+        return fs.readFileSync(filePath, 'utf8');
     });
 }
 exports.readFile = readFile;
