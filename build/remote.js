@@ -27,11 +27,11 @@ function scrapyPosts(pageNumberOffset, pageNumberLimit, site) {
             timeout: 3000000 //timeout: 20초 안에 새 탭의 주소로 이동하지 않으면 에러 발생
         };
         const page = yield browser.newPage();
-        const { sitename, url, selector } = site;
-        const { list, children, title, author, up, updated } = selector;
+        const { sitename, url, pageurl, selector } = site;
+        const { list, children, title, author, up, updated, link } = selector;
         const posts = [];
         for (let i = pageNumberOffset; i <= pageNumberLimit; i++) {
-            const endpoint = `${url}${i}`;
+            const endpoint = `${pageurl}${i}`;
             const response = yield page.goto(endpoint, pageOption);
             if (response !== null) {
                 const html = yield response.text();
@@ -44,6 +44,7 @@ function scrapyPosts(pageNumberOffset, pageNumberLimit, site) {
                         author: ele.find(author).text(),
                         up: ele.find(up).text(),
                         updated: ele.find(updated).text(),
+                        link: ele.find(link).attr('href'),
                     };
                     posts.push(post);
                 }

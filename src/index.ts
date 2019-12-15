@@ -5,8 +5,10 @@ import { Posts, Post, PostPayload } from './Post';
 import * as fs from 'fs';
 import levenshtein from 'fast-levenshtein'
 
-async function compare(Posts1: Post[], Posts2: Post[]) {
+async function compare(Posts1: Post[], Posts2: Post[]): Promise<Array<string>> {
     
+    const result: Array<string> = [];
+
     Posts1.map((post1: Post) => {
         Posts2.map((post2: Post) => {
             
@@ -14,20 +16,24 @@ async function compare(Posts1: Post[], Posts2: Post[]) {
             const title2 = post2.title
             const distance = levenshtein.get(title1, title2);
 
+            const link = post1.link;
             if(title1 !== '' && title1.length > 5 &&title2 !== '' && title2.length > 5&& distance < 5 ) {
-                console.log(distance, title1, title2)
+                console.log(distance, title1, link)
+                result.push(`${title1} \n link\n`)
             }    
         })
     })
 
-}
-async function main() {
+    return result;
 
-    const posts1 = await scrapyPosts(1, 21, sites[0]);
-    const posts2 = await scrapyPosts(1, 21, sites[1]);
-    await ( writeFile(posts1, sites[0]), writeFile(posts2, sites[1]) );
+}
+export async function main() {
+
+    // const posts1 = await scrapyPosts(1, 21, sites[0]);
+    // const posts2 = await scrapyPosts(1, 21, sites[1]);
+    // await ( writeFile(posts1, sites[0]), writeFile(posts2, sites[1]) );
     
-    compare( JSON.parse(await readFile(sites[0])), JSON.parse(await readFile(sites[1])) )
+    return await compare( JSON.parse(await readFile(sites[0])), JSON.parse(await readFile(sites[1])) )
 }
 
 main()
