@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         xhr.onreadystatechange = (e) => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                alert(xhr.responseText);
-            }
+                document.getElementById('test').innerHTML = xhr.responseText;
+    }
           };
         xhr.open('GET', url, true);
         
