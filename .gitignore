@@ -1,5 +1,7 @@
 /src/**.js*
-
+test
+build
+!build/package.json
 # Logs
 logs
 *.log

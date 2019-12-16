@@ -8,7 +8,8 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
 
     const browserOption = {
         // slowMo: 500, // 디버깅용으로 퍼핏티어 작업을 지정된 시간(ms)만큼 늦춥니다.
-        headless: false // 디버깅용으로 false 지정하면 브라우저가 자동으로 열린다.
+        // headless: false // 디버깅용으로 false 지정하면 브라우저가 자동으로 열린다.
+        headless: true
     };
     const browser = await puppeteer.launch(browserOption);
 

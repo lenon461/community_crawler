@@ -2,10 +2,10 @@
   "name": "crawler",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "fetch": "ts-node src/index.ts"
+    "fetch": "ts-node index.ts"
   },
   "author": "",
   "license": "ISC",
