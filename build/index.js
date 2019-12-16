@@ -25,7 +25,7 @@ function compare(Posts1, Posts2) {
                 const title2 = post2.title;
                 const distance = fast_levenshtein_1.default.get(title1, title2);
                 const link = post1.link;
-                if (title1 !== '' && title1.length > 5 && title2 !== '' && title2.length > 5 && distance < 5) {
+                if (title1 !== '' && title1.length > 5 && title2 !== '' && title2.length > 5 && distance < 10) {
                     console.log(distance, title1, link);
                     result.push(`<a href="${link}">${title1}</a>\n`);
                 }
@@ -38,18 +38,20 @@ function compare(Posts1, Posts2) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const posts1 = yield remote_1.scrapyPosts(1, 1, selector_1.default[0]);
-        // const posts2 = await scrapyPosts(1, 1, sites[1]);
-        // await ( writeFile(posts1, sites[0]), writeFile(posts2, sites[1]) );
-        return yield compare(JSON.parse(yield write_1.readFile(selector_1.default[0])), JSON.parse(yield write_1.readFile(selector_1.default[1])));
-        // return await compare( posts1, posts2 )
+        const posts2 = yield remote_1.scrapyPosts(1, 1, selector_1.default[1]);
+        yield (write_1.writeFile(posts1, selector_1.default[0]), write_1.writeFile(posts2, selector_1.default[1]));
+        // return await compare( JSON.parse(await readFile(sites[0])), JSON.parse(await readFile(sites[1])) )
+        return yield compare(posts1, posts2);
     });
 }
 exports.main = main;
+main();
 exports.fuc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('message is loading');
     const posts1 = yield remote_1.scrapyPosts(1, 1, selector_1.default[0]);
+    const posts2 = yield remote_1.scrapyPosts(1, 1, selector_1.default[1]);
+    console.log('message is loading');
     // const posts1 = JSON.parse(await readFile(sites[0]))
-    const posts2 = JSON.parse(yield write_1.readFile(selector_1.default[1]));
+    // const posts2 = JSON.parse(await readFile(sites[1]))
     let message = yield compare(posts1, posts2);
     console.log('message is loaded');
     res.status(200).send(message);
