@@ -16,12 +16,12 @@ export async function writeFile(posts: Post[], site: selector): Promise<void>{
 
     const filePath = path.join(__dirname, '../data', `${site.sitename}.json`);
 
-    const fd = fs.openSync(filePath, 'w');
-    
+    await fs.openSync(filePath, 'a+');
+    // const fd = await fs.writeFileSync(filePath, ' ')
     // const obj = posts.map(post => {
     //     return {'payload': post}
     // })
-    fs.appendFileSync(filePath, JSON.stringify(posts)+ '\n');
+    await fs.appendFileSync(filePath, JSON.stringify(posts)+ '\n');
     console.log("file is writed")
 
     return ;
@@ -34,3 +34,4 @@ export async function readFile(site: selector): Promise<string>{
 
     return fs.readFileSync(filePath, 'utf8');
 }
+

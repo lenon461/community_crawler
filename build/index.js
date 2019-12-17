@@ -16,6 +16,11 @@ const remote_1 = require("./src/remote");
 const selector_1 = __importDefault(require("./src/selector"));
 const write_1 = require("./src/write");
 const fast_levenshtein_1 = __importDefault(require("fast-levenshtein"));
+const datastore_1 = require("@google-cloud/datastore");
+const datastore = new datastore_1.Datastore({
+    projectId: 'tribal-isotope-228803',
+    keyFilename: 'tribal-isotope-228803-8d000bd04e4c.json'
+});
 function compare(Posts1, Posts2) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = [];
@@ -25,7 +30,7 @@ function compare(Posts1, Posts2) {
                 const title2 = post2.title;
                 const distance = fast_levenshtein_1.default.get(title1, title2);
                 const link = post1.link;
-                if (title1 !== '' && title1.length > 5 && title2 !== '' && title2.length > 5 && distance < 10) {
+                if (title1 !== '' && title1.length > 5 && title2 !== '' && title2.length > 5 && distance < 5) {
                     console.log(distance, title1, link);
                     result.push(`<a href="${link}">${title1}</a>\n`);
                 }
@@ -37,22 +42,44 @@ function compare(Posts1, Posts2) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const posts1 = yield remote_1.scrapyPosts(1, 1, selector_1.default[0]);
-        const posts2 = yield remote_1.scrapyPosts(1, 1, selector_1.default[1]);
+        const kindName = 'posts';
+        const posts1 = yield remote_1.scrapyPosts(1, 20, selector_1.default[0]);
+        const posts2 = yield remote_1.scrapyPosts(1, 20, selector_1.default[1]);
         yield (write_1.writeFile(posts1, selector_1.default[0]), write_1.writeFile(posts2, selector_1.default[1]));
+        let message = yield compare(posts1, posts2);
+        console.log('message is loaded');
+        yield datastore.save({
+            key: datastore.key(kindName),
+            data: {
+                data: JSON.stringify(message) + '\n',
+                createdAt: new Date()
+            }
+        });
+        console.log('message is saved');
+        return message;
         // return await compare( JSON.parse(await readFile(sites[0])), JSON.parse(await readFile(sites[1])) )
-        return yield compare(posts1, posts2);
     });
 }
 exports.main = main;
 main();
+setInterval(function () {
+    main();
+}, 1000 * 60 * 60 * 24);
 exports.fuc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts1 = yield remote_1.scrapyPosts(1, 1, selector_1.default[0]);
-    const posts2 = yield remote_1.scrapyPosts(1, 1, selector_1.default[1]);
-    console.log('message is loading');
-    // const posts1 = JSON.parse(await readFile(sites[0]))
-    // const posts2 = JSON.parse(await readFile(sites[1]))
-    let message = yield compare(posts1, posts2);
-    console.log('message is loaded');
-    res.status(200).send(message);
+    try {
+        const posts1 = yield remote_1.scrapyPosts(1, 10, selector_1.default[0]);
+        const posts2 = yield remote_1.scrapyPosts(1, 10, selector_1.default[1]);
+        console.log('message is loading');
+        let message = yield compare(posts1, posts2);
+        // await datastore.save({
+        //     key: datastore.key(kindName),
+        //     data: {
+        //         data: JSON.stringify(message) + '\n',
+        //         createdAt: new Date()
+        //     }
+        // })    
+    }
+    catch (error) {
+        console.error('ERROR:', error);
+    }
 });

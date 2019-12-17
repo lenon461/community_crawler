@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import * as fs from 'fs';
+import * as path from 'path'
 import { Posts, Post, PostPayload } from './Post';
 import { selector } from './selector';
 
@@ -16,16 +17,15 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
     const browser = await puppeteer.launch(browserOption);
 
     const pageOption = {
-        // waitUntil: 'networkidle2',// waitUntil: 적어도 500ms 동안 두 개 이상의 네트워크 연결이 없으면 탐색이 완료된 것으로 간주합니다.
+        // waitUntil: "load",// waitUntil: networkidle2 적어도 500ms 동안 두 개 이상의 네트워크 연결이 없으면 탐색이 완료된 것으로 간주합니다.
         timeout: 3000000 //timeout: 20초 안에 새 탭의 주소로 이동하지 않으면 에러 발생
     };
     const page = await browser.newPage();
-
     const { sitename, url, pageurl, selector } = site;
     const { list, children, title, author, up, updated, link } = selector;
     const posts = []
 
-    for(let i = pageNumberOffset; i <= pageNumberLimit; i++){
+    for (let i = pageNumberOffset; i <= pageNumberLimit; i++) {
         const endpoint = `${pageurl}${i}`;
         const response = await page.goto(endpoint, pageOption);
 
@@ -33,8 +33,8 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
             const html = await response.text();
             const $ = cheerio.load(html);
             const $list = $(list).children(children);
-            
-            for(let index = 0; index < $list.length; index++) {
+
+            for (let index = 0; index < $list.length; index++) {
                 const ele = cheerio($list[index]);
                 const post: PostPayload = {
                     title: ele.find(title).text(),
@@ -47,7 +47,8 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
             }
         }
     }
-    await page.close(); 
+    await page.close();
     await browser.close();
     return posts.map(payload => new Post(payload))
+
 }
