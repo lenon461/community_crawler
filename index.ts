@@ -35,13 +35,13 @@ async function compare(Posts1: Post[], Posts2: Post[]): Promise<Array<string>> {
 
 }
 export async function main() {
-    const kindName = 'posts';
     const posts1 = await scrapyPosts(1, 20, sites[0]);
     const posts2 = await scrapyPosts(1, 20, sites[1]);
     await (writeFile(posts1, sites[0]), writeFile(posts2, sites[1]));
 
     let message = await compare(posts1, posts2)
     console.log('message is loaded')
+    const kindName = ['posts', yyyymmdd(new Date())];
 
     await datastore.save({
         key: datastore.key(kindName),
@@ -49,8 +49,8 @@ export async function main() {
             key: yyyymmdd(new Date),
             data: JSON.stringify(message) + '\n',
             createdAt: new Date(),
-            excludeFromIndexes: true
-        }
+        },
+        excludeFromIndexes: true
     })
     console.log('message is saved')
 

@@ -43,20 +43,20 @@ function compare(Posts1, Posts2) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const kindName = 'posts';
         const posts1 = yield remote_1.scrapyPosts(1, 20, selector_1.default[0]);
         const posts2 = yield remote_1.scrapyPosts(1, 20, selector_1.default[1]);
         yield (write_1.writeFile(posts1, selector_1.default[0]), write_1.writeFile(posts2, selector_1.default[1]));
         let message = yield compare(posts1, posts2);
         console.log('message is loaded');
+        const kindName = ['posts', util_1.yyyymmdd(new Date())];
         yield datastore.save({
             key: datastore.key(kindName),
             data: {
                 key: util_1.yyyymmdd(new Date),
                 data: JSON.stringify(message) + '\n',
                 createdAt: new Date(),
-                excludeFromIndexes: true
-            }
+            },
+            excludeFromIndexes: true
         });
         console.log('message is saved');
         return message;
