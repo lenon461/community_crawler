@@ -1,7 +1,6 @@
 /src/**.js*
 test
-build
-!build/package.json
+build/*
 # Logs
 logs
 *.log
@@ -10,6 +9,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 tribal-isotope-228803-8d000bd04e4c.json
+build/index.js
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

@@ -13,8 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const remote_1 = require("./src/remote");
-const selector_1 = __importDefault(require("./src/selector"));
 const write_1 = require("./src/write");
+const util_1 = require("./src/util");
+const selector_1 = __importDefault(require("./src/selector"));
 const fast_levenshtein_1 = __importDefault(require("fast-levenshtein"));
 const datastore_1 = require("@google-cloud/datastore");
 const datastore = new datastore_1.Datastore({
@@ -32,7 +33,7 @@ function compare(Posts1, Posts2) {
                 const link = post1.link;
                 if (title1 !== '' && title1.length > 5 && title2 !== '' && title2.length > 5 && distance < 5) {
                     console.log(distance, title1, link);
-                    result.push(`<a href="${link}">${title1}</a>\n`);
+                    result.push(`${title1} : ${link}`);
                 }
             });
         });
@@ -51,6 +52,7 @@ function main() {
         yield datastore.save({
             key: datastore.key(kindName),
             data: {
+                key: util_1.yyyymmdd(new Date),
                 data: JSON.stringify(message) + '\n',
                 createdAt: new Date(),
                 excludeFromIndexes: true
@@ -66,21 +68,3 @@ main();
 setInterval(function () {
     main();
 }, 1000 * 60 * 60 * 24);
-exports.fuc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const posts1 = yield remote_1.scrapyPosts(1, 10, selector_1.default[0]);
-        const posts2 = yield remote_1.scrapyPosts(1, 10, selector_1.default[1]);
-        console.log('message is loading');
-        let message = yield compare(posts1, posts2);
-        // await datastore.save({
-        //     key: datastore.key(kindName),
-        //     data: {
-        //         data: JSON.stringify(message) + '\n',
-        //         createdAt: new Date()
-        //     }
-        // })    
-    }
-    catch (error) {
-        console.error('ERROR:', error);
-    }
-});

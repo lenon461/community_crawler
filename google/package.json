@@ -1,0 +1,11 @@
+{
+  "name": "crawler",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "main": "readGDS.js",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/datastore": "^5.0.2"
+  }
+}

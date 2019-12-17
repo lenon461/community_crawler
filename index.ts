@@ -1,7 +1,8 @@
 import { scrapyPosts } from './src/remote'
-import sites from './src/selector';
 import { writeFile, readFile } from './src/write';
 import { Posts, Post, PostPayload } from './src/Post';
+import { yyyymmdd } from './src/util';
+import sites from './src/selector';
 import * as fs from 'fs';
 import levenshtein from 'fast-levenshtein'
 import Storage from '@google-cloud/storage'
@@ -25,7 +26,7 @@ async function compare(Posts1: Post[], Posts2: Post[]): Promise<Array<string>> {
             const link = post1.link;
             if (title1 !== '' && title1.length > 5 && title2 !== '' && title2.length > 5 && distance < 5) {
                 console.log(distance, title1, link)
-                result.push(`<a href="${link}">${title1}</a>\n`)
+                result.push(`${title1} : ${link}`)
             }
         })
     })
@@ -43,13 +44,14 @@ export async function main() {
     console.log('message is loaded')
 
     await datastore.save({
-            key: datastore.key(kindName),
-            data: {
-                data: JSON.stringify(message) + '\n',
-                createdAt: new Date(),
-                excludeFromIndexes: true
-            }
-        }) 
+        key: datastore.key(kindName),
+        data: {
+            key: yyyymmdd(new Date),
+            data: JSON.stringify(message) + '\n',
+            createdAt: new Date(),
+            excludeFromIndexes: true
+        }
+    })
     console.log('message is saved')
 
     return message;
@@ -58,29 +60,6 @@ export async function main() {
 }
 main();
 
-setInterval(function() {
+setInterval(function () {
     main();
 }, 1000 * 60 * 60 * 24);
-
-
-exports.fuc = async (req: any, res: any) => {
-    try {
-
-        const posts1 = await scrapyPosts(1, 10, sites[0]);
-        const posts2 = await scrapyPosts(1, 10, sites[1]);
-        console.log('message is loading')
-
-        let message = await compare(posts1, posts2)
-        // await datastore.save({
-        //     key: datastore.key(kindName),
-        //     data: {
-        //         data: JSON.stringify(message) + '\n',
-        //         createdAt: new Date()
-        //     }
-        // })    
-
-    } catch (error) {
-        console.error('ERROR:', error);
-
-    }
-}
