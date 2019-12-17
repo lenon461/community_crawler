@@ -46,7 +46,8 @@ export async function main() {
             key: datastore.key(kindName),
             data: {
                 data: JSON.stringify(message) + '\n',
-                createdAt: new Date()
+                createdAt: new Date(),
+                excludeFromIndexes: true
             }
         }) 
     console.log('message is saved')
