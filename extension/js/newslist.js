@@ -6,38 +6,50 @@ document.addEventListener('DOMContentLoaded', function () {
     function createLists(productList) {
         var ul = document.createElement('ul');
         ul.setAttribute('id', 'proList');
-
-        if(productList){
+        var productArray = JSON.parse(productList.data);
 
         document.getElementById('NewsLists').appendChild(ul);
-            productList.forEach(renderProductList);
-        }
-        const temp = productList;
-        productList =  ['Electronics Watch', 'House wear Items', 'Kids wear'];
-
-
-        function renderProductList(element, index, arr) {
+        productArray.forEach(element => {
             var li = document.createElement('li');
-            li.setAttribute('class', 'item');
+            var a = document.createElement('a');
+            li.setAttribute('id', 'item');
 
             ul.appendChild(li);
+            var pos = element.indexOf(':')
+            var title = element.substring(0, pos);
+            var link = element.substring(pos, element.length);
 
-            li.innerHTML = li.innerHTML + element;
-        }
+            li.innerHTML = li.innerHTML + title;
+            li.appendChild(a);
+            a.innerText = 'link' + link
+            a.setAttribute('href', link)
+
+
+        });;
+    }
+    document.getElementsByTagName("item").onclick = function (e) {
+        e = e || event
+        var target = e.target || e.srcElement
+        if (target.nodeName != 'A') return
+        var href = target.href
+        chrome.tabs.create({ url: href });
+        alert(1);
+        return false;
     }
 
-    var url = 'https://us-central1-tribal-isotope-228803.cloudfunctions.net/function-2/'; //A local page
+    var url = 'https://asia-northeast1-tribal-isotope-228803.cloudfunctions.net/function-1/'; //A local page
 
     function load(url, callback) {
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = (e) => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                createLists(JSON.parse(xhr.responseText));
-    }
-          };
+                const response = JSON.parse(xhr.responseText);
+                createLists(response);
+            }
+        };
         xhr.open('GET', url, true);
-        
+
         xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
         xhr.setRequestHeader('Access-Control-Allow-Methods', 'GET');
         xhr.setRequestHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -47,18 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('updatedAt').innerHTML = new Date().toString();
 
     const updatedAt = document.getElementById('updatedAt').innerHTML;
-    if(new Date(updatedAt).getDate() !== new Date().getDate()){
-        load(url, (response) => {
-            console.log(response)
-    
-            document.getElementById('updatedAt').innerHTML = new Date().toString();
-        })
-        document.getElementById('updatedAt').innerHTML = new Date().toString();
-        document.getElementById('status').innerHTML = 'newly updated'
-    }
-    else {
-        document.getElementById('status').innerHTML = 'Thank You'
-    }
 
     load(url, (response) => {
         console.log(response)
