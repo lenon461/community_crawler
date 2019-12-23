@@ -35,8 +35,8 @@ async function compare(Posts1: Post[], Posts2: Post[]): Promise<Array<string>> {
 
 }
 export async function main() {
-    const posts1 = await scrapyPosts(1, 20, sites[0]);
-    const posts2 = await scrapyPosts(1, 20, sites[1]);
+    const posts1 = await scrapyPosts(1, 1, sites[0]);
+    const posts2 = await scrapyPosts(1, 1, sites[1]);
     await (writeFile(posts1, sites[0]), writeFile(posts2, sites[1]));
 
     let message = await compare(posts1, posts2)
