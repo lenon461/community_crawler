@@ -5,12 +5,11 @@ import { yyyymmdd } from './src/util';
 import sites from './src/selector';
 import * as fs from 'fs';
 import levenshtein from 'fast-levenshtein'
-import Storage from '@google-cloud/storage'
-import { Datastore } from '@google-cloud/datastore';
-const datastore = new Datastore({
-    projectId: 'tribal-isotope-228803',
-    keyFilename: 'tribal-isotope-228803-8d000bd04e4c.json'
-});
+import { sequelize } from './models';
+
+import * as PostModel from './models/post.model';
+import * as UserModel from './models/user.model';
+import { log, time, timeEnd } from 'console';
 
 async function compare(Posts1: Post[], Posts2: Post[]): Promise<Array<string>> {
 
@@ -35,31 +34,49 @@ async function compare(Posts1: Post[], Posts2: Post[]): Promise<Array<string>> {
 
 }
 export async function main() {
-    const posts1 = await scrapyPosts(1, 1, sites[0]);
-    const posts2 = await scrapyPosts(1, 1, sites[1]);
-    await (writeFile(posts1, sites[0]), writeFile(posts2, sites[1]));
 
-    let message = await compare(posts1, posts2)
-    console.log('message is loaded')
-    const kindName = ['posts', yyyymmdd(new Date())];
+    await sequelize.sync();
 
-    await datastore.save({
-        key: datastore.key(kindName),
-        data: {
-            key: yyyymmdd(new Date),
-            data: JSON.stringify(message) + '\n',
-            createdAt: new Date(),
-        },
-        excludeFromIndexes: true
-    })
-    console.log('message is saved')
+    log("MAIN START");
 
-    return message;
+    time("Link")
+    const user = await PostModel.Post.findOne({where : {link : '/best/2438829540'}});
+    console.log(user  && user.get())
+    timeEnd("Link");
 
-    // return await compare( JSON.parse(await readFile(sites[0])), JSON.parse(await readFile(sites[1])) )
+    time("titles")
+    const titles = await PostModel.Post.findAll({where : {title :'데일리메일 클롭 기존 시니어 필드 선수 명으로 에버튼과 싸운다 '}});
+    // console.log(titles.map(post => post.get()))
+    timeEnd("titles");
+
+    time("title")
+    const title = await PostModel.Post.findOne({where : {title : '데일리메일 클롭 기존 시니어 필드 선수 명으로 에버튼과 싸운다 '}});
+    console.log((title && title.get()))
+    timeEnd("title");
+
+    time("Post")
+    const post = await PostModel.Post.findOne({where : {id : 210003}});
+    console.log(post  && post.get())
+    timeEnd("Post");
+
+    time("posts")
+    const posts = await PostModel.Post.findAll();
+    console.log(posts.map(post => post.get()).length)
+    timeEnd("posts");
+}
+export async function write() {
+    for (let i = 1; i < 990; i++) {
+        const posts2 = await scrapyPosts(i, i + 10, sites[1]);
+
+        posts2.map(post => {
+            PostModel.Post.create(post)
+                .then((post: any) => log(post))
+                .catch((error: any) => log(error))
+        })
+    }
+
+    // PostModel.Post.findAll()
+    //     .then((posts: any) => log(posts))
+    //     .catch((error: any) => log(error))
 }
 main();
-
-setInterval(function () {
-    main();
-}, 1000 * 60 * 60 * 24);

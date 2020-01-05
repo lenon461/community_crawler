@@ -5,7 +5,7 @@ export interface selectorPayload {
     title: string;
     author: string;
     up: string;
-    updated: string;
+    uploaded: string;
     link: string;
 }
 
@@ -27,7 +27,7 @@ const sites: selector[] = [
             title: 'tr > td.title > a > span.ed.title-link',
             author: 'tr > td.author > a',
             up: 'tr > td.ed.voteNum.text-primary',
-            updated: 'tr > td.time',
+            uploaded: 'tr > td.time',
             link: 'tr> td.title > a',
         },
     },
@@ -41,7 +41,7 @@ const sites: selector[] = [
             title: 'li > div > h3 > a',
             author: 'li > div > div > span.author',
             up: 'li > div > a.pc_voted_count.pc_voted_count_plus.pc_voted_count_short > span.count',
-            updated: 'li > div > div > span.regdate',
+            uploaded: 'li > div > div > span.regdate',
             link: 'li > div > h3 > a',
 
         }

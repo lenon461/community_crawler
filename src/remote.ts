@@ -22,7 +22,7 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
     };
     const page = await browser.newPage();
     const { sitename, url, pageurl, selector } = site;
-    const { list, children, title, author, up, updated, link } = selector;
+    const { list, children, title, author, up, uploaded, link } = selector;
     const posts = []
 
     for (let i = pageNumberOffset; i <= pageNumberLimit; i++) {
@@ -40,7 +40,7 @@ export async function scrapyPosts(pageNumberOffset: number, pageNumberLimit: num
                     title: ele.find(title).text(),
                     author: ele.find(author).text(),
                     up: ele.find(up).text(),
-                    updated: ele.find(updated).text(),
+                    uploaded: ele.find(uploaded).text(),
                     link: ele.find(link).attr('href'),
                 };
                 posts.push(post);

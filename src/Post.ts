@@ -4,7 +4,7 @@ export interface PostPayload {
     title: string;
     author: string;
     up: string;
-    updated: string;
+    uploaded: string;
     link?: string;
 }
 
@@ -16,18 +16,18 @@ export class Post {
     author: string;
     up: number;
     created: Date;
-    updated: string;
+    uploaded: string;
     link?: string;
 
     constructor(payload: PostPayload) {
-        const {title, author, up, updated,link} = payload;
+        const {title, author, up, uploaded,link} = payload;
 
         this.id = id++;
         this.title = title.replace(/[^ ㄱ-ㅣ가-힣]+/g, '').replace('[/[/g]','');
         this.author = author;
         this.up = parseInt(up, 10);
         this.created = new Date();
-        this.updated = updated;
+        this.uploaded = uploaded;
         this.link = link;
     }
 }
